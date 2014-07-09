@@ -85,47 +85,53 @@ namespace SummerSchoolExcelParserDeux
 
         public void Perform(List<List<Student>> data, String[] columns)
         {
-            var excelApp = new Excel.Application();
-
             Dictionary<String, List<int>> odata = Squash(data, columns);
+
+            var excelApp = new Excel.Application();
             
             Excel.Workbook wb = excelApp.Workbooks.Add();
 
             Excel.Worksheet ws = wb.Sheets.Add();
-            ws.Activate();
 
-            ws.Cells[2, 1] = "Student";
-            for (int i = 0; i < columns.Length; ++i)
+            try
             {
-                ws.Cells[2, 2 + i] = columns[i];
-            }
+                ws.Activate();
 
-            int idx = 0;
-            foreach (KeyValuePair<String, List<int>> kv in odata)
-            {
-                Console.WriteLine("{0}: {1}", kv.Key, String.Join(",", kv.Value.ToArray()));
-                ws.Cells[3 + idx, 1] = kv.Key;
+                ws.Cells[2, 1] = "Student";
                 for (int i = 0; i < columns.Length; ++i)
                 {
-                    ws.Cells[3 + idx, 2 + i] = kv.Value[i];
+                    ws.Cells[2, 2 + i] = columns[i];
                 }
-                ++idx;
+
+                int idx = 0;
+                foreach (KeyValuePair<String, List<int>> kv in odata)
+                {
+                    Console.WriteLine("{0}: {1}", kv.Key, String.Join(",", kv.Value.ToArray()));
+                    ws.Cells[3 + idx, 1] = kv.Key;
+                    for (int i = 0; i < columns.Length; ++i)
+                    {
+                        ws.Cells[3 + idx, 2 + i] = kv.Value[i];
+                    }
+                    ++idx;
+                }
+
+                wb.SaveAs(path_);
             }
+            finally
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-            wb.SaveAs(path_);
+                Marshal.FinalReleaseComObject(ws);
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+                wb.Close(false);
+                Marshal.FinalReleaseComObject(wb);
 
-            Marshal.FinalReleaseComObject(ws);
-
-            wb.Close(true, path_) ;
-            Marshal.FinalReleaseComObject(wb);
-
-            excelApp.Quit();
-            Marshal.FinalReleaseComObject(excelApp); 
+                excelApp.Quit();
+                Marshal.FinalReleaseComObject(excelApp);
+            }
         }
     }
 }

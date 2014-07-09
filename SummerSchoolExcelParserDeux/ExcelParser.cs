@@ -24,6 +24,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,8 @@ namespace SummerSchoolExcelParserDeux
         public String name;
         public Dictionary<String, String> data;
     }
+
+    /** I may have exagerated with the Marshal.FinalReleaseComObject calls, but I was having some leaks and it got solved */
     class ExcelParser
     {
         private String path_;
@@ -64,18 +67,19 @@ namespace SummerSchoolExcelParserDeux
         {
             List<Student> ret = new List<Student>();
 
-            //var numRows = numRows_;//ws.Rows.Count - 2; don't work
-            //var numCols = numCols_; ;// ws.Columns.Count - 1; don't work
             Excel.Range range = ws.UsedRange;
             int numRows = range.Rows.Count - 2;
             int numCols = range.Columns.Count - 1;
+            Marshal.FinalReleaseComObject(range);
             if (numRows < 0 || numCols < 0) throw new Exception("Invalid format?");
 
             List<String> colNames = new List<String>();
             for (int i = 0; i < numCols; ++i)
             {
                 const int offshot = 2;
-                String name = ws.Cells[2, offshot + i].Text;
+                var cell = ws.Cells[2, offshot + i];
+                String name = cell.Text;
+                Marshal.FinalReleaseComObject(cell);
 
                 if (name == "")
                 {
@@ -95,7 +99,9 @@ namespace SummerSchoolExcelParserDeux
                 StringBuilder sb = new StringBuilder("A");
                 sb.Append(offshot + i);
 
-                String name = ws.Cells[offshot + i, "A"].Text;
+                var cell = ws.Cells[offshot + i, "A"];
+                String name = cell.Text;
+                Marshal.FinalReleaseComObject(cell);
                 if (name == "")
                 {
                     numRows = i;
@@ -110,7 +116,9 @@ namespace SummerSchoolExcelParserDeux
                 {
                     const int colOff = 2;
 
-                    String val = ws.Cells[offshot + i, colOff + j].Text;
+                    var cella = ws.Cells[offshot + i, colOff + j];
+                    String val = cella.Text;
+                    Marshal.FinalReleaseComObject(cella);
 
                     theGuy.data.Add(colNamesA[j], val);
                 }
@@ -127,31 +135,39 @@ namespace SummerSchoolExcelParserDeux
 
             var excelApp = new Excel.Application();
             Excel.Workbook wb = excelApp.Workbooks.Open(path_, ReadOnly: true);
-            //Excel.Worksheet ws = wb.Sheets[1];
-            //ws.Activate();
 
-            foreach (Excel.Worksheet ws in wb.Sheets)
+            try
             {
-                String name = ws.Name;
-                if (name == "TEMPLATE")
+                foreach (Excel.Worksheet ws in wb.Sheets)
                 {
-                    continue;
+                    String name = ws.Name;
+                    if (name == "TEMPLATE")
+                    {
+                        continue;
+                    }
+                    ws.Activate();
+                    ret.Add(DoSheet(ws));
+
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    Marshal.FinalReleaseComObject(ws);
                 }
-                ws.Activate();
-                ret.Add(DoSheet(ws));
-
-                Marshal.FinalReleaseComObject(ws);
             }
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();                   
-            GC.WaitForPendingFinalizers();
+            finally
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-            wb.Close(SaveChanges: false);
-            Marshal.FinalReleaseComObject(wb); 
+                wb.Close(SaveChanges: false);
+                Marshal.FinalReleaseComObject(wb);
 
-            excelApp.Quit();
-            Marshal.FinalReleaseComObject(excelApp); 
+                excelApp.Quit();
+                Marshal.FinalReleaseComObject(excelApp);
+            }
 
             return ret;
         }
