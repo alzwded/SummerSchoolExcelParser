@@ -143,6 +143,11 @@ namespace SummerSchoolExcelParserDeux
                     String name = ws.Name;
                     if (name == "TEMPLATE")
                     {
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        Marshal.FinalReleaseComObject(ws);
                         continue;
                     }
                     ws.Activate();
