@@ -14,6 +14,8 @@ All data will be squashed in the final output.
 
 Press save and select a path to a file (e.g. `c:\output.xlsx`) to get the output.
 
+If you modify the structure of the excel file by adding or removing columns, please create a new file and then run the tool on both. This is because of a limitation that assumes that one book has the same format, and that the format can vary only between books. Basically the TEMPLATE sheet should have the same columns as the rest of the book.
+
 Building
 --------
 
