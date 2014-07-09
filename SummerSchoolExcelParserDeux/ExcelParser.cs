@@ -64,15 +64,24 @@ namespace SummerSchoolExcelParserDeux
         {
             List<Student> ret = new List<Student>();
 
-            var numRows = numRows_;//ws.Rows.Count - 2; don't work
-            var numCols = numCols_; ;// ws.Columns.Count - 1; don't work
-            //if (numRows < 0) throw new Exception("Invalid format?");
+            //var numRows = numRows_;//ws.Rows.Count - 2; don't work
+            //var numCols = numCols_; ;// ws.Columns.Count - 1; don't work
+            Excel.Range range = ws.UsedRange;
+            int numRows = range.Rows.Count - 2;
+            int numCols = range.Columns.Count - 1;
+            if (numRows < 0 || numCols < 0) throw new Exception("Invalid format?");
 
             List<String> colNames = new List<String>();
             for (int i = 0; i < numCols; ++i)
             {
                 const int offshot = 2;
                 String name = ws.Cells[2, offshot + i].Text;
+
+                if (name == "")
+                {
+                    numCols = i;
+                    break;
+                }
                 colNames.Add(name);
             }
 
@@ -87,6 +96,11 @@ namespace SummerSchoolExcelParserDeux
                 sb.Append(offshot + i);
 
                 String name = ws.Cells[offshot + i, "A"].Text;
+                if (name == "")
+                {
+                    numRows = i;
+                    break;
+                }
 
                 Student theGuy = new Student();
                 theGuy.name = name;
