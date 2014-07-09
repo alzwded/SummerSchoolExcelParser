@@ -74,6 +74,7 @@ namespace SummerSchoolExcelParserDeux
                 }
                 catch (Exception ex)
                 {
+                    System.Windows.Forms.MessageBox.Show("Some random error happened. Check console window for details");
                     Console.Error.WriteLine(ex.ToString());
                 }
             }
@@ -81,8 +82,16 @@ namespace SummerSchoolExcelParserDeux
             Console.Write("Writing to {0} :: Columns: ", path);
             Console.WriteLine(String.Join(",", cols));
 
-            OutputProducer op = new OutputProducer(path, Properties.Settings.Default.ROWS, Properties.Settings.Default.COLUMNS);
-            op.Perform(data, cols.ToArray<String>());
+            try
+            {
+                OutputProducer op = new OutputProducer(path, Properties.Settings.Default.ROWS, Properties.Settings.Default.COLUMNS);
+                op.Perform(data, cols.ToArray<String>());
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Some random error happened. Check console window for details");
+                Console.Error.WriteLine(ex.ToString());
+            }
         }
     }
 }
