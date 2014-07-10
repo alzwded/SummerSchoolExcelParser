@@ -47,6 +47,7 @@ namespace SummerSchoolExcelParserDeux
         {
             String path = "";
             SaveFileDialog sd = new SaveFileDialog();
+            sd.Filter = "Excel spreadsheet|*.xlsx";
             sd.DefaultExt = "xlsx";
             if (sd.ShowDialog() == DialogResult.OK)
             {
@@ -57,13 +58,13 @@ namespace SummerSchoolExcelParserDeux
                 return;
             }
 
-            String[] items = this.textBox1.Text.Split('\n').ToArray<String>();
+            String[] items = this.textBox1.Lines.ToArray();
 
             List<List<Student>> data = new List<List<Student>>();
 
             HashSet<String> cols = new HashSet<String>();
-
-            foreach (String i in items)
+            
+            foreach (String i in from s in items where s.Length > 0 select s)
             {
                 try
                 {
@@ -91,6 +92,22 @@ namespace SummerSchoolExcelParserDeux
             {
                 System.Windows.Forms.MessageBox.Show("Some random error happened. Check console window for details");
                 Console.Error.WriteLine(ex.ToString());
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog od = new OpenFileDialog();
+            od.Filter = "Excel workbooks|*.xlsx|Older excel workbook|*.xls|CSV|*.csv|All Files|*.*";
+            od.CheckFileExists = true;
+            od.CheckPathExists = true;
+            od.Multiselect = true;
+            if (od.ShowDialog() == DialogResult.OK)
+            {
+                foreach (String fileName in od.FileNames)
+                {
+                    textBox1.AppendText(Environment.NewLine + fileName);
+                }
             }
         }
     }

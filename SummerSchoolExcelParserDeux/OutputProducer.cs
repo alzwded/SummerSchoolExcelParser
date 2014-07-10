@@ -64,8 +64,7 @@ namespace SummerSchoolExcelParserDeux
 
         private int Convert(String cell)
         {
-            if (cell == "med") return 1;
-            if (cell == "high") return 3;
+            if (amounts_.Keys.Contains(cell)) return amounts_[cell];
             return 0;
         }
 
