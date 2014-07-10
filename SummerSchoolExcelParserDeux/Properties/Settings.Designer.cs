@@ -43,9 +43,21 @@ namespace SummerSchoolExcelParserDeux.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>med:1</string>\r\n  <string>high:3</string>\r\n</ArrayOfString>")]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>med:1</string>
+  <string>high:3</string>
+  <string>positive:1</string>
+  <string>awesome:3</string>
+  <string>negative:-1</string>
+  <string>dreadful:-3</string>
+  <string>good:1</string>
+  <string>plusgood:2</string>
+  <string>doubleplusgood:3</string>
+  <string>ungood:-1</string>
+  <string>plusungood:-2</string>
+  <string>doubleplusungood:-3</string>
+</ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection VALUES {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["VALUES"]));

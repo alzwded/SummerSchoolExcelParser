@@ -13,6 +13,16 @@
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;med:1&lt;/string&gt;
   &lt;string&gt;high:3&lt;/string&gt;
+  &lt;string&gt;positive:1&lt;/string&gt;
+  &lt;string&gt;awesome:3&lt;/string&gt;
+  &lt;string&gt;negative:-1&lt;/string&gt;
+  &lt;string&gt;dreadful:-3&lt;/string&gt;
+  &lt;string&gt;good:1&lt;/string&gt;
+  &lt;string&gt;plusgood:2&lt;/string&gt;
+  &lt;string&gt;doubleplusgood:3&lt;/string&gt;
+  &lt;string&gt;ungood:-1&lt;/string&gt;
+  &lt;string&gt;plusungood:-2&lt;/string&gt;
+  &lt;string&gt;doubleplusungood:-3&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
   </Settings>
