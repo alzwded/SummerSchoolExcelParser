@@ -23,27 +23,32 @@ namespace SummerSchoolExcelParserDeux.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("9")]
         public int ROWS {
             get {
                 return ((int)(this["ROWS"]));
             }
-            set {
-                this["ROWS"] = value;
-            }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("14")]
         public int COLUMNS {
             get {
                 return ((int)(this["COLUMNS"]));
             }
-            set {
-                this["COLUMNS"] = value;
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>med:1</string>\r\n  <string>high:3</string>\r\n</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection VALUES {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["VALUES"]));
             }
         }
     }

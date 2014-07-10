@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace SummerSchoolExcelParserDeux
 {
@@ -40,11 +41,25 @@ namespace SummerSchoolExcelParserDeux
         private int numRows_;
         private int numCols_;
 
+        private Dictionary<String, int> amounts_;
+
         public OutputProducer(String path, int numRows, int numCols)
         {
             path_ = path;
             numRows_ = numRows;
             numCols_ = numCols;
+
+            amounts_ = new Dictionary<String, int>();
+
+            Regex r = new Regex("(?<name>[^:]*):(?<value>.*)");
+            foreach (String s in Properties.Settings.Default.VALUES)
+            {
+                Match m = r.Match(s);
+                int val = 0;
+                if (!int.TryParse(m.Groups["value"].Value, out val)) continue;
+
+                amounts_.Add(m.Groups["name"].Value, val);
+            }
         }
 
         private int Convert(String cell)
