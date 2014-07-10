@@ -129,6 +129,10 @@ namespace SummerSchoolExcelParserDeux
                     Marshal.FinalReleaseComObject(r);
                 }
 
+                Excel.Range addFilterRng = ws.Range["A2", ws.Cells[2, 1 + columns.Length]];
+                addFilterRng.AutoFilter(1, Operator: Excel.XlAutoFilterOperator.xlAnd, VisibleDropDown: true);
+                Marshal.FinalReleaseComObject(addFilterRng);
+
                 int idx = 0;
                 foreach (KeyValuePair<String, List<int>> kv in odata)
                 {
