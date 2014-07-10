@@ -82,7 +82,7 @@ namespace SummerSchoolExcelParserDeux
                         foreach(String t in columns) numbers.Add(0);
                         squashed.Add(s.name, numbers);
                     }
-
+                    
                     for(int i = 0; i < columns.Length; ++i) {
                         if (s.data.Keys.Contains(columns[i]))
                         {
@@ -110,11 +110,23 @@ namespace SummerSchoolExcelParserDeux
             try
             {
                 ws.Activate();
+                ws.Name = "Results";
 
                 ws.Cells[2, 1] = "Student";
                 for (int i = 0; i < columns.Length; ++i)
                 {
                     ws.Cells[2, 2 + i] = columns[i];
+                    Excel.Range r = ws.Cells[2, 2 + i];
+                    r.WrapText = true;
+                    r.Font.Bold = true;
+                    r.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                    r.ColumnWidth = 12;
+
+                    Excel.Borders brs = r.Borders;
+                    brs[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    Marshal.FinalReleaseComObject(brs);
+
+                    Marshal.FinalReleaseComObject(r);
                 }
 
                 int idx = 0;
@@ -129,6 +141,17 @@ namespace SummerSchoolExcelParserDeux
                     ++idx;
                 }
 
+                excelApp.DisplayAlerts = false;
+                foreach (Excel.Worksheet w2 in wb.Worksheets)
+                {
+                    if (w2.Equals(ws)) continue;
+                    w2.Delete();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    Marshal.FinalReleaseComObject(w2);
+                }
                 wb.SaveAs(path_);
             }
             finally

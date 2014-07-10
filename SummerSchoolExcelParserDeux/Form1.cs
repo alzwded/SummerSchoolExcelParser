@@ -45,26 +45,18 @@ namespace SummerSchoolExcelParserDeux
 
         private void button1_Click(object sender, EventArgs e)
         {
-            String path = "";
             SaveFileDialog sd = new SaveFileDialog();
             sd.Filter = "Excel spreadsheet|*.xlsx";
             sd.DefaultExt = "xlsx";
-            if (sd.ShowDialog() == DialogResult.OK)
-            {
-                path = sd.FileName;
-            }
-            else
-            {
-                return;
-            }
+            if (sd.ShowDialog() != DialogResult.OK) return;
+            String path = sd.FileName;
 
-            String[] items = this.textBox1.Lines.ToArray();
-
+            this.UseWaitCursor = true;
+            
             List<List<Student>> data = new List<List<Student>>();
-
             HashSet<String> cols = new HashSet<String>();
             
-            foreach (String i in from s in items where s.Length > 0 select s)
+            foreach (String i in from s in this.textBox1.Lines where s.Length > 0 select s)
             {
                 try
                 {
@@ -93,6 +85,8 @@ namespace SummerSchoolExcelParserDeux
                 System.Windows.Forms.MessageBox.Show("Some random error happened. Check console window for details");
                 Console.Error.WriteLine(ex.ToString());
             }
+
+            this.UseWaitCursor = false;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -102,12 +96,11 @@ namespace SummerSchoolExcelParserDeux
             od.CheckFileExists = true;
             od.CheckPathExists = true;
             od.Multiselect = true;
-            if (od.ShowDialog() == DialogResult.OK)
+            if (od.ShowDialog() != DialogResult.OK) return;
+            
+            foreach (String fileName in od.FileNames)
             {
-                foreach (String fileName in od.FileNames)
-                {
-                    textBox1.AppendText(Environment.NewLine + fileName);
-                }
+                textBox1.AppendText(Environment.NewLine + fileName);
             }
         }
     }
