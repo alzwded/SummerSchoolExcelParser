@@ -85,7 +85,7 @@ namespace SummerSchoolExcelParserDeux
             {
                 try
                 {
-                    ExcelParser ep = new ExcelParser(i, Properties.Settings.Default.ROWS, Properties.Settings.Default.COLUMNS);
+                    ExcelParser ep = new ExcelParser(i);
                     data.AddRange(ep.Get());
 
                     foreach (String s in ep.LastColumns) cols.Add(s);
@@ -102,7 +102,7 @@ namespace SummerSchoolExcelParserDeux
 
             try
             {
-                OutputProducer op = new OutputProducer(path, Properties.Settings.Default.ROWS, Properties.Settings.Default.COLUMNS);
+                OutputProducer op = new OutputProducer(path);
                 op.Perform(data, cols.ToArray<String>());
             }
             catch (Exception ex)

@@ -38,16 +38,12 @@ namespace SummerSchoolExcelParserDeux
     class OutputProducer
     {
         private String path_;
-        private int numRows_;
-        private int numCols_;
 
         private Dictionary<String, int> amounts_;
 
-        public OutputProducer(String path, int numRows, int numCols)
+        public OutputProducer(String path)
         {
             path_ = path;
-            numRows_ = numRows;
-            numCols_ = numCols;
 
             amounts_ = new Dictionary<String, int>();
 

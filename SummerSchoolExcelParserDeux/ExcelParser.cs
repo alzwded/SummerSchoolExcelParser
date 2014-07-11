@@ -46,9 +46,6 @@ namespace SummerSchoolExcelParserDeux
     class ExcelParser
     {
         private String path_;
-        private int numRows_;
-        private int numCols_;
-
         private String[] lastCols_;
 
         public String[] LastColumns
@@ -56,11 +53,9 @@ namespace SummerSchoolExcelParserDeux
             get { return lastCols_; }
         }
 
-        public ExcelParser(String path, int numRows, int numCols)
+        public ExcelParser(String path)
         {
             path_ = path;
-            numRows_ = numRows;
-            numCols_ = numCols;
         }
 
         private List<Student> DoSheet(Excel.Worksheet ws)
