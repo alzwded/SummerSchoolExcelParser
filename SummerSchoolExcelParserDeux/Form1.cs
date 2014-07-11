@@ -126,10 +126,10 @@ namespace SummerSchoolExcelParserDeux
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // only allow XLS files because of formatting and filters and whatnot
+            // extensions are very strict
             SaveFileDialog sd = new SaveFileDialog()
             {
-                Filter = "Excel spreadsheet|*.xlsx|Old spreadsheet|*.xls",
+                Filter = "Excel spreadsheet|*.xlsx|Old spreadsheet|*.xls|CSV|*.csv",
                 DefaultExt = "xlsx"
             };
             if (sd.ShowDialog() != DialogResult.OK) return;

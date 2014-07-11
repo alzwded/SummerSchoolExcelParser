@@ -109,6 +109,30 @@ namespace SummerSchoolExcelParserDeux
             return squashed;
         }
 
+        private Excel.XlFileFormat FormatFromExtension(String path)
+        {
+            Regex r = new Regex("^.*\\.(?<ext>[^.]*)$");
+            var m = r.Match(path);
+            if (m.Success)
+            {
+                switch (m.Groups["ext"].Value)
+                {
+                    case "xlsx":
+                        return Excel.XlFileFormat.xlOpenXMLWorkbook;
+                    case "xls":
+                        return Excel.XlFileFormat.xlExcel8;
+                    case "csv":
+                        return Excel.XlFileFormat.xlCSV;
+                    default:
+                        return Excel.XlFileFormat.xlWorkbookDefault;
+                }
+            }
+            else
+            {
+                return Excel.XlFileFormat.xlWorkbookDefault;
+            }
+        }
+
         /// <summary>
         /// parse the raw data and write out the results using columns as the table header
         /// </summary>
@@ -174,7 +198,7 @@ namespace SummerSchoolExcelParserDeux
                     GC.WaitForPendingFinalizers();
                     Marshal.FinalReleaseComObject(w2);
                 }
-                wb.SaveAs(path_);
+                wb.SaveAs(path_, FormatFromExtension(path_));
             }
             finally
             {
