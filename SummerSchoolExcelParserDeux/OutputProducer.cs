@@ -71,7 +71,7 @@ namespace SummerSchoolExcelParserDeux
         private Dictionary<String, List<int>> Squash(List<List<Student>> data, String[] columns)
         {
             Dictionary<String, List<int>> squashed = new Dictionary<String, List<int>>();
-            
+
             foreach (List<Student> sheet in data)
             {
                 foreach (Student s in sheet)

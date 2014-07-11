@@ -33,37 +33,62 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Threads = System.Threading;
 
 namespace SummerSchoolExcelParserDeux
 {
+    internal class Wurkr
+    {
+        public event System.EventHandler Done;
+        public delegate void Do();
+
+        private Do do_;
+
+        public Wurkr(Do f)
+        {
+            do_ = f;
+        }
+
+        private void PDo()
+        {
+            do_();
+            Done.Invoke(this, new EventArgs());
+        }
+
+        public void Doa()
+        {
+            var self = this;
+            Threads.ThreadStart starter = new Threads.ThreadStart(self.PDo);
+            
+            Threads.Thread t = new Threads.Thread(starter) { IsBackground = true };
+            t.Start();
+        }
+    }
+
     public partial class Form1 : Form
     {
+        public const String SAVE_BUTTON_NORMAL = "Save";
+        public const String SAVE_BUTTON_WORKING = "Working...";
+
         public Form1()
         {
             InitializeComponent();
+            this.button1.Text = SAVE_BUTTON_NORMAL;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Process(String path)
         {
-            SaveFileDialog sd = new SaveFileDialog();
-            sd.Filter = "Excel spreadsheet|*.xlsx";
-            sd.DefaultExt = "xlsx";
-            if (sd.ShowDialog() != DialogResult.OK) return;
-            String path = sd.FileName;
-
-            this.UseWaitCursor = true;
-            
             List<List<Student>> data = new List<List<Student>>();
             HashSet<String> cols = new HashSet<String>();
-            
+
             foreach (String i in from s in this.textBox1.Lines where s.Length > 0 select s)
             {
                 try
                 {
                     ExcelParser ep = new ExcelParser(i, Properties.Settings.Default.ROWS, Properties.Settings.Default.COLUMNS);
                     data.AddRange(ep.Get());
-                    
-                    foreach(String s in ep.LastColumns) cols.Add(s);
+
+                    foreach (String s in ep.LastColumns) cols.Add(s);
                 }
                 catch (Exception ex)
                 {
@@ -85,8 +110,33 @@ namespace SummerSchoolExcelParserDeux
                 System.Windows.Forms.MessageBox.Show("Some random error happened. Check console window for details");
                 Console.Error.WriteLine(ex.ToString());
             }
+        }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sd = new SaveFileDialog();
+            sd.Filter = "Excel spreadsheet|*.xlsx";
+            sd.DefaultExt = "xlsx";
+            if (sd.ShowDialog() != DialogResult.OK) return;
+            String path = sd.FileName;
+
+            this.UseWaitCursor = true;
+            this.Enabled = false;
+            this.button1.Text = SAVE_BUTTON_WORKING;
+
+            Wurkr.Do boundProcess = () => Process(path);
+            Wurkr w = new Wurkr(boundProcess);
+            w.Done += w_Done;
+            w.Doa();
+        }
+
+        void w_Done(object sender, EventArgs e)
+        {
             this.UseWaitCursor = false;
+            this.Invoke((MethodInvoker)delegate {
+                this.Enabled = true;
+                this.button1.Text = SAVE_BUTTON_NORMAL;
+            });
         }
 
         private void button2_Click(object sender, EventArgs e)
