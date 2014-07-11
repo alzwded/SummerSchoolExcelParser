@@ -46,6 +46,9 @@ namespace SummerSchoolExcelParserDeux
         /// </summary>
         private Dictionary<String, int> amounts_;
 
+        /// <summary>
+        /// </summary>
+        /// <param name="path">the path to write to</param>
         public OutputProducer(String path)
         {
             path_ = path;
