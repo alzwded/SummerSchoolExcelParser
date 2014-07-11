@@ -26,12 +26,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Threads = System.Threading;
 
@@ -64,7 +60,6 @@ namespace SummerSchoolExcelParserDeux
         /// </summary>
         public void Doa()
         {
-            var self = this;
             Threads.ThreadStart starter = new Threads.ThreadStart(() =>
             {
                 try
@@ -98,11 +93,11 @@ namespace SummerSchoolExcelParserDeux
             List<List<Student>> data = new List<List<Student>>();
             HashSet<String> cols = new HashSet<String>();
 
-            foreach (String i in from s in this.textBox1.Lines where s.Length > 0 select s)
+            foreach (String fileName in from line in this.textBox1.Lines where line.Length > 0 select line)
             {
                 try
                 {
-                    ExcelParser ep = new ExcelParser(i);
+                    ExcelParser ep = new ExcelParser(fileName);
                     data.AddRange(ep.Get());
 
                     foreach (String s in ep.LastColumns) cols.Add(s);
@@ -131,27 +126,25 @@ namespace SummerSchoolExcelParserDeux
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sd = new SaveFileDialog();
             // only allow XLS files because of formatting and filters and whatnot
-            sd.Filter = "Excel spreadsheet|*.xlsx|Old spreadsheet|*.xls";
-            sd.DefaultExt = "xlsx";
+            SaveFileDialog sd = new SaveFileDialog()
+            {
+                Filter = "Excel spreadsheet|*.xlsx|Old spreadsheet|*.xls",
+                DefaultExt = "xlsx"
+            };
             if (sd.ShowDialog() != DialogResult.OK) return;
-            String path = sd.FileName;
 
-            this.UseWaitCursor = true;
-            this.Enabled = false;
-            this.button1.Text = SAVE_BUTTON_WORKING;
+            UseWaitCursor = !(Enabled = false); 
+            button1.Text = SAVE_BUTTON_WORKING;
 
             // bind the path parameter because the work delegate needs to be void(void)
-            Wurkr.Do boundProcess = () => Process(path);
-            Wurkr w = new Wurkr(boundProcess);
+            Wurkr w = new Wurkr(() => Process(sd.FileName));
             // notify when done
             w.Done += (EventHandler)((sndr, evar) => {
                 // UI update needs to be done on the main thread
                 this.Invoke((MethodInvoker)delegate
                 {
-                    this.UseWaitCursor = false;
-                    this.Enabled = true;
+                    this.UseWaitCursor = !(Enabled = true);
                     this.button1.Text = SAVE_BUTTON_NORMAL;
                 });
             });
@@ -162,17 +155,16 @@ namespace SummerSchoolExcelParserDeux
 
         private void button2_Click(object sender, EventArgs e)
         {
-            OpenFileDialog od = new OpenFileDialog();
-            od.Filter = "Excel workbooks|*.xlsx|Older excel workbook|*.xls|CSV|*.csv|All Files|*.*";
-            od.CheckFileExists = true;
-            od.CheckPathExists = true;
-            od.Multiselect = true;
+            OpenFileDialog od = new OpenFileDialog()
+            {
+                Filter = "Excel workbooks|*.xlsx|Older excel workbook|*.xls|CSV|*.csv|All Files|*.*",
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Multiselect = true
+            };
             if (od.ShowDialog() != DialogResult.OK) return;
             
-            foreach (String fileName in od.FileNames)
-            {
-                textBox1.AppendText(Environment.NewLine + fileName);
-            }
+            foreach (String fileName in od.FileNames) textBox1.AppendText(Environment.NewLine + fileName);
         }
     }
 }

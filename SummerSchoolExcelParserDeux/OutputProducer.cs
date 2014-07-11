@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -52,7 +51,6 @@ namespace SummerSchoolExcelParserDeux
         public OutputProducer(String path)
         {
             path_ = path;
-
             amounts_ = new Dictionary<String, int>();
 
             // parse the settings and build the dictionary
@@ -102,9 +100,7 @@ namespace SummerSchoolExcelParserDeux
                     for(int i = 0; i < columns.Length; ++i) {
                         if (s.data.Keys.Contains(columns[i]))
                         {
-                            int oldval = squashed[s.name][i];
-                            int t = Convert(s.data[columns[i]]);
-                            squashed[s.name][i] = oldval + t;
+                            squashed[s.name][i] = squashed[s.name][i] + Convert(s.data[columns[i]]);
                         }
                     }
                 }
@@ -123,9 +119,7 @@ namespace SummerSchoolExcelParserDeux
             Dictionary<String, List<int>> odata = Squash(data, columns);
 
             var excelApp = new Excel.Application();
-            
             Excel.Workbook wb = excelApp.Workbooks.Add();
-
             Excel.Worksheet ws = wb.Sheets.Add();
 
             try
