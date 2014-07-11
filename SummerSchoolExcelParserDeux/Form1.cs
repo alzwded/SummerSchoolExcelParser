@@ -59,25 +59,23 @@ namespace SummerSchoolExcelParserDeux
             do_ = f;
         }
 
-        private void PDo()
-        {
-            try
-            {
-                do_();
-            }
-            finally
-            {
-                Done.Invoke(this, new EventArgs());
-            }
-        }
-
         /// <summary>
         /// Run the task
         /// </summary>
         public void Doa()
         {
             var self = this;
-            Threads.ThreadStart starter = new Threads.ThreadStart(self.PDo);
+            Threads.ThreadStart starter = new Threads.ThreadStart(() =>
+            {
+                try
+                {
+                    do_();
+                }
+                finally
+                {
+                    Done.Invoke(this, new EventArgs());
+                }
+            });
             
             Threads.Thread t = new Threads.Thread(starter) { IsBackground = true };
             t.Start();
