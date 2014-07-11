@@ -42,17 +42,27 @@ namespace SummerSchoolExcelParserDeux
         public Dictionary<String, String> data;
     }
 
-    /** I may have exagerated with the Marshal.FinalReleaseComObject calls, but I was having some leaks and it got solved */
+    /// <summary>
+    /// <para>parse one excel file in the agreed upon format</para>
+    /// <para>I may have exagerated with the Marshal.FinalReleaseComObject calls, but I was having some leaks and it got solved by magic</para>
+    /// </summary>
     class ExcelParser
     {
         private String path_;
         private String[] lastCols_;
 
+        /// <summary>
+        /// the last template header used
+        /// </summary>
         public String[] LastColumns
         {
             get { return lastCols_; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path">the path to read from; it should be something excel can read</param>
         public ExcelParser(String path)
         {
             path_ = path;
@@ -62,12 +72,14 @@ namespace SummerSchoolExcelParserDeux
         {
             List<Student> ret = new List<Student>();
 
+            // determine extend
             Excel.Range range = ws.UsedRange;
             int numRows = range.Rows.Count - 2;
             int numCols = range.Columns.Count - 1;
             Marshal.FinalReleaseComObject(range);
             if (numRows < 0 || numCols < 0) throw new Exception("Invalid format?");
 
+            // read the column names
             List<String> colNames = new List<String>();
             for (int i = 0; i < numCols; ++i)
             {
@@ -87,6 +99,7 @@ namespace SummerSchoolExcelParserDeux
             String[] colNamesA = colNames.ToArray<String>();
             lastCols_ = colNamesA;
 
+            // read the data
             for (int i = 0; i < numRows; ++i)
             {
                 const int offshot = 3;
@@ -124,6 +137,10 @@ namespace SummerSchoolExcelParserDeux
             return ret;
         }
 
+        /// <summary>
+        /// parse a workbook
+        /// </summary>
+        /// <returns>raw 3d data</returns>
         public List<List<Student>> Get()
         {
             List<List<Student>> ret = new List<List<Student>>();
@@ -136,6 +153,7 @@ namespace SummerSchoolExcelParserDeux
                 foreach (Excel.Worksheet ws in wb.Sheets)
                 {
                     String name = ws.Name;
+                    // ignore the template sheet since it contains no useful data
                     if (name == "TEMPLATE")
                     {
                         GC.Collect();

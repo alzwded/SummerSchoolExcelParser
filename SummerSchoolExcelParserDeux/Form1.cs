@@ -37,13 +37,23 @@ using Threads = System.Threading;
 
 namespace SummerSchoolExcelParserDeux
 {
+    /// <summary>
+    /// Helper class that assists in running a background task and notifying it's done
+    /// </summary>
     internal class Wurkr
     {
+        /// <summary>
+        /// Event fired when task is done
+        /// </summary>
         public event System.EventHandler Done;
         public delegate void Do();
 
         private Do do_;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="f">the task to be run</param>
         public Wurkr(Do f)
         {
             do_ = f;
@@ -51,10 +61,19 @@ namespace SummerSchoolExcelParserDeux
 
         private void PDo()
         {
-            do_();
-            Done.Invoke(this, new EventArgs());
+            try
+            {
+                do_();
+            }
+            finally
+            {
+                Done.Invoke(this, new EventArgs());
+            }
         }
 
+        /// <summary>
+        /// Run the task
+        /// </summary>
         public void Doa()
         {
             var self = this;
@@ -115,7 +134,8 @@ namespace SummerSchoolExcelParserDeux
         private void button1_Click(object sender, EventArgs e)
         {
             SaveFileDialog sd = new SaveFileDialog();
-            sd.Filter = "Excel spreadsheet|*.xlsx|Old spreadsheet|*.xlsx|CSV|*.csv|All files|*.*";
+            // only allow XLS files because of formatting and filters and whatnot
+            sd.Filter = "Excel spreadsheet|*.xlsx|Old spreadsheet|*.xls";
             sd.DefaultExt = "xlsx";
             if (sd.ShowDialog() != DialogResult.OK) return;
             String path = sd.FileName;
@@ -124,16 +144,21 @@ namespace SummerSchoolExcelParserDeux
             this.Enabled = false;
             this.button1.Text = SAVE_BUTTON_WORKING;
 
+            // bind the path parameter because the work delegate needs to be void(void)
             Wurkr.Do boundProcess = () => Process(path);
             Wurkr w = new Wurkr(boundProcess);
+            // notify when done
             w.Done += w_Done;
+            // start background task
             w.Doa();
         }
 
         void w_Done(object sender, EventArgs e)
         {
-            this.UseWaitCursor = false;
-            this.Invoke((MethodInvoker)delegate {
+            // UI update needs to be done on the main thread
+            this.Invoke((MethodInvoker)delegate
+            {
+                this.UseWaitCursor = false;
                 this.Enabled = true;
                 this.button1.Text = SAVE_BUTTON_NORMAL;
             });

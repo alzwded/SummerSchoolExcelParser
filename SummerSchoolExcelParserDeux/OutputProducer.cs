@@ -35,10 +35,15 @@ using System.Text.RegularExpressions;
 
 namespace SummerSchoolExcelParserDeux
 {
+    /// <summary>
+    /// Writes out the result spreadsheet
+    /// </summary>
     class OutputProducer
     {
         private String path_;
-
+        /// <summary>
+        /// in memory representation of the settings
+        /// </summary>
         private Dictionary<String, int> amounts_;
 
         public OutputProducer(String path)
@@ -47,6 +52,7 @@ namespace SummerSchoolExcelParserDeux
 
             amounts_ = new Dictionary<String, int>();
 
+            // parse the settings and build the dictionary
             Regex r = new Regex("(?<name>[^:]*):(?<value>.*)");
             foreach (String s in Properties.Settings.Default.VALUES)
             {
@@ -58,12 +64,23 @@ namespace SummerSchoolExcelParserDeux
             }
         }
 
+        /// <summary>
+        /// translate the stringy value to an integer value as specified in the application's settings
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
         private int Convert(String cell)
         {
             if (amounts_.Keys.Contains(cell)) return amounts_[cell];
             return 0;
         }
 
+        /// <summary>
+        /// flatten the 3d view to a 2d table by reducing the time series via summation
+        /// </summary>
+        /// <param name="data">raw data</param>
+        /// <param name="columns">column names; mostly to keep the same order in the results</param>
+        /// <returns></returns>
         private Dictionary<String, List<int>> Squash(List<List<Student>> data, String[] columns)
         {
             Dictionary<String, List<int>> squashed = new Dictionary<String, List<int>>();
@@ -93,6 +110,11 @@ namespace SummerSchoolExcelParserDeux
             return squashed;
         }
 
+        /// <summary>
+        /// parse the raw data and write out the results using columns as the table header
+        /// </summary>
+        /// <param name="data">the raw data</param>
+        /// <param name="columns">the header columns</param>
         public void Perform(List<List<Student>> data, String[] columns)
         {
             Dictionary<String, List<int>> odata = Squash(data, columns);
@@ -108,6 +130,7 @@ namespace SummerSchoolExcelParserDeux
                 ws.Activate();
                 ws.Name = "Results";
 
+                // build the header
                 ws.Cells[2, 1] = "Student";
                 for (int i = 0; i < columns.Length; ++i)
                 {
@@ -129,6 +152,7 @@ namespace SummerSchoolExcelParserDeux
                 addFilterRng.AutoFilter(1, Operator: Excel.XlAutoFilterOperator.xlAnd, VisibleDropDown: true);
                 Marshal.FinalReleaseComObject(addFilterRng);
 
+                // add the data
                 int idx = 0;
                 foreach (KeyValuePair<String, List<int>> kv in odata)
                 {
@@ -141,6 +165,7 @@ namespace SummerSchoolExcelParserDeux
                     ++idx;
                 }
 
+                // remove "Sheet [123]"
                 excelApp.DisplayAlerts = false;
                 foreach (Excel.Worksheet w2 in wb.Worksheets)
                 {
