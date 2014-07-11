@@ -146,20 +146,18 @@ namespace SummerSchoolExcelParserDeux
             Wurkr.Do boundProcess = () => Process(path);
             Wurkr w = new Wurkr(boundProcess);
             // notify when done
-            w.Done += w_Done;
+            w.Done += (EventHandler)((sndr, evar) => {
+                // UI update needs to be done on the main thread
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.UseWaitCursor = false;
+                    this.Enabled = true;
+                    this.button1.Text = SAVE_BUTTON_NORMAL;
+                });
+            });
+
             // start background task
             w.Doa();
-        }
-
-        void w_Done(object sender, EventArgs e)
-        {
-            // UI update needs to be done on the main thread
-            this.Invoke((MethodInvoker)delegate
-            {
-                this.UseWaitCursor = false;
-                this.Enabled = true;
-                this.button1.Text = SAVE_BUTTON_NORMAL;
-            });
         }
 
         private void button2_Click(object sender, EventArgs e)
